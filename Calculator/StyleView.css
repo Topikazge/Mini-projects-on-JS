@@ -3,6 +3,10 @@
     height: 100%; 
 }
 
+div{
+    border: 1px solid red;
+}
+
 #Calculator_block{
     width: 50%;
     height: 50%;
@@ -17,5 +21,14 @@
 
 #view{
     height: 50px;
-    width: 100%;
+    text-align: center;
+}
+
+#buttons{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-gap: 4px;
+    border-radius: 5px;
+    max-width: 360px;
+    
 }
