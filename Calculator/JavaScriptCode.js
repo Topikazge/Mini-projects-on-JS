@@ -62,7 +62,7 @@ class ModelView {
     }
 
 }
-
+//Ебаный рот этого казына иыва пА ЙЦ К 
 class Model {
     #_expression;
     #_calculator;
@@ -71,13 +71,7 @@ class Model {
         this.#_expression = new Expression();
         this.#_calculator = new Calculator();
         this.#_viewerEnterDate = new ViewerEnterDate(viewModel.View);
-        // this.#_expression.ChangeExpression(this.#_expression, this.#_viewerEnterDate.View);
-        this.#_expression.addEventListener('ClearExpression', function () { console.log('hfghf'); this.#_viewerEnterDate.View; });
-        this.#_expression.addEventListener('AddOperation', function () { console.log('hfghf'); this.#_viewerEnterDate.View; });
-        this.#_expression.addEventListener('Delete', function () { console.log('hfghf'); this.#_viewerEnterDate.View; });
-        this.#_expression.addEventListener('AddAnswer', function () { console.log('hfghf'); this.#_viewerEnterDate.View; });
-
-
+        this.#_expression.ChangeExpression(this.#_viewerEnterDate.View);
     }
 
     AddNimber(value) {
@@ -100,11 +94,12 @@ class Model {
 
 class Expression {
     #_elements;
+    #_onChange;
 
     constructor() {
-        this.#_elements = new ElementsExpression()
+        this.#_elements = new ElementsExpression();
+        this.#_onChange = new Delegate();
     }
-
 
     get FirstValue() {
         return this.#_elements.FirstValue;
@@ -132,6 +127,7 @@ class Expression {
         for (elem in this.#_elements) {
             elem = undefined;
         }
+        this.#_onChange.Invok(this.#_elements);
     }
 
     AddNumber(value) {
@@ -147,16 +143,19 @@ class Expression {
         else if (this.#_elements.SecondValue != undefined) {
             this.#_elements.SecondValue += value;
         }
+        this.#_onChange.Invok(this.#_elements);
     }
 
     AddOperation(operation) {
         if (this.#_elements.FirstValue != undefined && this.#_elements.SecondValue == undefined) {
             this.#_elements.MathOperation = operation;
         }
+        this.#_onChange.Invok(this.#_elements);
     }
 
     AddAnswer(value) {
         this.#_elements.Answer = value;
+        this.#_onChange.Invok(this.#_elements);
     }
 
 
@@ -170,10 +169,11 @@ class Expression {
         else if (this.#_elements.FirstValue != undefined) {
             this.#_elements.FirstValue = undefined;
         }
+        this.#_onChange.Invok(this.#_elements);
     }
 
-    ChangeExpression(h, _method) {
-        let Vvv = function () { _method(this.#_elements); }
+    ChangeExpression(_method) {
+        this.#_onChange.Add(_method);
         /*   this.addEventListener('ClearExpression', function () { console.log('hfghf'); _method(this.#_elements); });
            this.addEventListener('AddOperation', function () { console.log('hfghf'); _method(this.#_elements); });
            this.addEventListener('Delete', function () { console.log('hfghf'); _method(this.#_elements); });
@@ -303,7 +303,7 @@ class ViewerEnterDate {
     }
 
     View(elements) {
-        text = '';
+        let text = ' ';
         if (elements.FirstValue != undefined) {
             text += elements.FirstValue;
         }
@@ -316,7 +316,10 @@ class ViewerEnterDate {
         if (elements.AddAnswer != undefined) {
             text += ' ' + ' = ' + elements.SecondValue;
         }
-        _event(elements);
+        else {
+            text += '0';
+        }
+        this.#_event(elements);
     }
 
 
@@ -362,6 +365,29 @@ class ElementsExpression {
         return this.#_answer;
     }
 
+}
+
+
+class Delegate {
+    #_listeners;
+    constructor() {
+        this.#_listeners = new Array();
+    }
+
+    Add(method) {
+        if (method != null && method != undefined)
+            this.#_listeners.push(method);
+    }
+
+    Remove() {
+
+    }
+
+    Invok(parametrs) {
+        for (let listener of this.#_listeners) {
+            listener(parametrs);
+        }
+    }
 }
 
 
